@@ -115,7 +115,7 @@ public class SearchFoodFragment extends Fragment {
 
         foodList.addItemDecoration(new DividerItemDecoration(referenceActivity.getApplicationContext(), LinearLayoutManager.VERTICAL));
 
-        final SearchResultAdapter adapter = new SearchResultAdapter(databaseFacade.findMostCommonProducts());
+        final SearchResultAdapter adapter = new SearchResultAdapter(databaseFacade.findMostCommonProducts(), FoodInfosToShow.getFoodInfosShownAsMap(getContext()));
         final EditText search = parentHolder.findViewById(R.id.search_term);
 
         foodList.setAdapter(adapter);
@@ -136,7 +136,7 @@ public class SearchFoodFragment extends Fragment {
                                 products = new LinkedList<Product>();
                                 for (int i = 0; i < productResponse.getProducts().size(); i++) {
                                     NetworkProduct product = productResponse.getProducts().get(i);
-                                    Product convertedProd = ProductConversionHelper.conversionProduct(product);
+                                    Product convertedProd = ProductConversionHelper.conversionProduct(product, getContext());
                                     if (convertedProd != null) {
                                         products.add(convertedProd);
                                     }
@@ -189,14 +189,22 @@ public class SearchFoodFragment extends Fragment {
                             TextView nameView = childView.findViewById(R.id.resultName);
                             String name = nameView.getText().toString();
 
+                            /* this used to be the way of getting the selected products calories etc.
+                            I do not understand, why it was done through parsing textViews contents.
+                            I changed it to instead use the product's id and getting the product from the adapter.
+
                             TextView calView = childView.findViewById(R.id.resultCalories);
                             String cal = calView.getText().toString();
                             cal = cal.split(" ")[0];
                             float calories = Float.parseFloat(cal);
 
+                             */
+                            Product product= adapter.getProductFromId(id);
+
                             ((BaseAddFoodActivity) referenceActivity).id = id;
                             ((BaseAddFoodActivity) referenceActivity).name = name;
-                            ((BaseAddFoodActivity) referenceActivity).calories = calories;
+                            ((BaseAddFoodActivity) referenceActivity).calories = product.energy;
+                            ((BaseAddFoodActivity) referenceActivity).selectedProduct = product;
                             ((BaseAddFoodActivity) referenceActivity).productSet = true;
                             ViewPager pager = referenceActivity.findViewById(R.id.pager_food);
                             System.out.println("Setting page");
@@ -232,7 +240,8 @@ public class SearchFoodFragment extends Fragment {
                 // search in the local db first
                 System.out.println(s.toString());
                 SearchResultAdapter newAdapter = new SearchResultAdapter(
-                        databaseFacade.getProductByName(s.toString())
+                        databaseFacade.getProductByName(s.toString()),
+                        FoodInfosToShow.getFoodInfosShownAsMap(getContext())
                 );
                 foodList.setAdapter(newAdapter);
             }
@@ -259,12 +268,12 @@ public class SearchFoodFragment extends Fragment {
                                 products = new LinkedList<Product>();
                                 for (int i = 0; i < productResponse.getProducts().size(); i++) {
                                     NetworkProduct product = productResponse.getProducts().get(i);
-                                    Product convertedProd = ProductConversionHelper.conversionProduct(product);
+                                    Product convertedProd = ProductConversionHelper.conversionProduct(product, getContext());
                                     if (convertedProd != null) {
                                         products.add(convertedProd);
                                     }
                                 }
-                                SearchResultAdapter newAdapter = new SearchResultAdapter(products);
+                                SearchResultAdapter newAdapter = new SearchResultAdapter(products, FoodInfosToShow.getFoodInfosShownAsMap(getContext()));
                                 foodList.setAdapter(newAdapter);
                                 foodList.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -307,12 +316,12 @@ public class SearchFoodFragment extends Fragment {
                             products = new LinkedList<Product>();
                             for (int i = 0; i < productResponse.getProducts().size(); i++) {
                                 NetworkProduct product = productResponse.getProducts().get(i);
-                                Product convertedProd = ProductConversionHelper.conversionProduct(product);
+                                Product convertedProd = ProductConversionHelper.conversionProduct(product, getContext());
                                 if (convertedProd != null) {
                                     products.add(convertedProd);
                                 }
                             }
-                            SearchResultAdapter newAdapter = new SearchResultAdapter(products);
+                            SearchResultAdapter newAdapter = new SearchResultAdapter(products, FoodInfosToShow.getFoodInfosShownAsMap(getContext()));
                             foodList.setAdapter(newAdapter);
                             foodList.addOnScrollListener(new RecyclerView.OnScrollListener() {
 

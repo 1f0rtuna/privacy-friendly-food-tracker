@@ -6,8 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.BaseAddFoodActivity"
     android:fitsSystemWindows="true">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/addFoodFieldLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -70,7 +74,10 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addEntry"
